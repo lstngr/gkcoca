@@ -1,3 +1,100 @@
 \section{Introduction}
 
-This is a mandatory introduction.
+% Outline:
+% [00] Why is this useful? Physical/numerical interest
+% [01] The gyrokinetic model and nonlinear Coulomb collision operator
+% [02] Change of basis between Hermite-Laguerre and generalized Legendre - generalized Laguerre polynomials. Physical interpretation of this step.
+% [03] Summary of current developments (Jorge and Lorenzo)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %[01] -- Physical/Numerical motivation %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+In future nuclear fusion devices, it is expected that the plasma periphery, which includes both the edge and scrape-off layer regions, plays an important role on the overall performance, namely regarding its influence on overall plasma confinement, power exhaust, plasma-wall interactions or ashes removal
+%cite
+.
+While the scrape-off layer region has been described by a drift-reduced fluid formalism
+% cite
+, such approximations are questionable when applied to the edge, which is a hotter and less collisional region of the plasma.
+In order to simulate and properly describe the plasma in such conditions, an accurate Coulomb operator is required. Previous studies
+% cite
+have shown the possibility to derive a linearized version of this operator, but since turbulent effects are expected to dominate the edge, we prefer considering a nonlinear description. Especially, we focus on a recent derivation
+% cite
+\footnote{The following computation are found in greater detail in
+%cite
+.}
+yielding an operator which can easily be implemented in numerical simulation codes.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% [02] GK model and Coulomb operator %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The gyrokinetic description of plasmas is based on first principles, which introduces simplifying assumption to the evolution of the Boltzmann distribution $f_a(\vec{x},\vec{v},t)$ of a species $a$, given by the Vlasov equation,
+\begin{equation}
+	\pdv{f_a}{t} + \dot{\vec{x}}\cdot\pdv{f_a}{\vec{x}} + \dot{\vec{v}}\cdot\pdv{f_a}{\vec{v}} = \sum_b C(f_a,f_b),
+\end{equation}
+where $C(f_a,f_b)$ is the Coulomb collision operator between species $a$ and $b$. When small angle collisions dominate, this operator can be expanded as
+\begin{equation}
+	C(f_a,f_b) = L_{ab} \sum_{j,k} \pdv{v_k} \biggl[ \pdv{v_j}\biggl(\pdv{G_b}{v_k}{v_j} f_a\biggr) - 2\biggl(1+\frac{m_a}{m_b}\biggr)\pdv{H_b}{v_k} f_a \biggr],
+\end{equation}
+where  the Rosenbluth potential $G_b$ and $H_b$, satisfying $\grad{v}^2G_b=2H_b$ and $\grad{v}^2H_b=-4\pi f_b$ defined as
+\begin{align}
+	G_b &= \int f_b(\vec{v}') \abs{\vec{v}-\vec{v}'}\dd{\vec{v}'} \\
+	H_b &= \int \frac{f_b(\vec{v}')}{\abs{\vec{v}-\vec{v}'}} \dd{\vec{v}'} \label{eq:rosenbluth_H}
+\end{align}
+We introduced $L_{ab}=q_a^2q_b^2\lambda_{ab}/(8\pi^2\epsilon_0^2m_a^2)=\nu_{ab}v_{tha}^3/n_b$, where $\lambda_{ab}$ and $\nu_{ab}$ the Coulomb logarithm, resp. collision frequency, between species $a$ and $b$. We also write $v_{tha}=\sqrt{2T_a/m_a}$, $q_a$, $m_a$ and $n_a$ the thermal speed, charge, mass and density of particles of species $a=e,i$.
+
+In order to recast $f_a$ into an appropriate basis, such that the Coulomb operator can be cast as a function of moments of $f_a$, it is noted that the Rosenbluth potential exhibit spherical symmetry, allowing one to perform the following multipole expansion of the factor in \cref{eq:rosenbluth_H},
+\begin{align}
+\frac{1}{\abs{\vec{v}-\vec{v}'}} =
+	\begin{dcases}
+	\sum_{l=0}^{\infty}\frac{(-\vec{v}')^l}{l!} \cdot \pdv[l]{\vec{v}}\biggl(\frac{1}{v}\biggr), & v'\leq v, \\
+	\sum_{l=0}^{\infty} \frac{(-\vec{v}')^l}{l!} \cdot \pdv[l]{(\vec{v}')} \biggl(\frac{1}{v'}\biggr), & v<v'.
+	\end{dcases}
+\end{align}
+Considering the spherical harmonic tensor $\tensor{Y}^l(\vec{v})$,
+\begin{equation}
+	\tensor{Y}^l(\vec{v}) = \frac{(-1)^lv^{2l+1}}{(2l-1)!!}\biggl(\pdv{\vec{v}}\biggr)^l\frac{1}{v},
+\end{equation}
+the Rosenbluth potential $H_b$ is rewritten as
+\begin{align}
+	H_b &= 2 \sum_{l=0}^{\infty}\frac{(2l-1)!!}{l!} \biggl(
+	\int_{v>v'} f_b(\vec{v}') \frac{(\vec{v}')^l}{v^{2l+1}} \tensor{Y}^l(\vec{v}) \dd{\vec{v}'}
+	+
+	\int_{v'\geq v} f_b(\vec{v}') \frac{(\vec{v})^l}{(v')^{2l+1}}\tensor{Y}^l(\vec{v}') \dd{\vec{v}'}
+	\biggr)
+	\\
+	&= 2 \sum_{l=0}^{\infty}\frac{(2l-1)!!}{l!} \tensor{Y}^l(\vec{v}) \biggl(
+	\frac{1}{(v^2)^{l+1/2}} \int_{v'<v} f_b(\vec{v}') \tensor{Y}^l(\vec{v}')\dd{\vec{v}'}
+	+
+	\int_{v'\geq v} f_b(\vec{v}')\frac{\tensor{Y}^l(\vec{v}')}{[(v')^2]^{l+1/2}} \dd{\vec{v}'}
+	\biggr),
+\end{align}
+where we used that $\tensor{Y}^l(\vec{v})$ is symmetric and totally traceless to obtain the second equality.
+
+The integration can be continued by expanding $f_b$ into a similar basis,
+\begin{equation}
+	\tensor{Y}^{lk}(\vec{v}) = \tensor{Y}^l(\vec{v}) \laguerreL[l+1/2]{k}(v^2),
+\end{equation}
+with $\laguerreL[l+1/2]{k}(v)$ the associated Laguerre polynomial:
+\begin{align}
+	\laguerreL[l+1/2]{k}(v) = \sum_{m=0}^{k}L_{km}^l v^l,\\
+	L_{km}^l=\frac{(-1)^m(l+k+1/2)!}{(k-m)!(l+m+1/2)!m!}.
+\end{align}
+This basis can be shown to be complete, such that $f_b$ is rewritten in terms of its velocity moments,
+\begin{align}
+	f_b(\vec{v}) &= f_{Mb} \sum_{l,k=0}^{\infty} \tensor{Y}^{lk}\biggl(\frac{\vec{v}}{v_{thb}}\biggr) \frac{\tensor{M}_b^{lk}}{\sigma_k^l},
+	\\
+	\tensor{M}_b^{lk} &= \frac{1}{n_b} \int f_b(\vec{v}) \tensor{Y}^{lk}\biggl(\frac{\vec{v}}{v_{thb}}\biggr)\dd{\vec{v}},
+	\\
+	\sigma_k^l &= \frac{l!(l+k+1/2)!}{2^l(l+1/2)!k!},
+\end{align}
+where $f_{Mb}$ a Maxwellian distribution function, and $\sigma_k^l$ a normalization constant. These expressions can then be replaced in the equations for $H_b$ and $G_b$.
+
+After a lengthy calculation, it can be shown that, linearizing for small perturbations yields
+\begin{equation}
+	C_{ab} = \sum_{p,j=0}^{\infty} \frac{f_{Ma}}{\sigma_j^p} \tensor{M}_a^{pj}\tensor{Y}^p(\vu*{v}) \nu_{ab}^{Tpj}
+	+
+	\sum_{l,k=0}^{\infty} \frac{f_{Ma}}{\sigma_j^p} \tensor{M}_b^{lk}\tensor{Y}^p(\vu*{v}) \nu_{ab}^{Flk},
+\end{equation}
+
+where there are enough new constants and indices such that I don't manage to explain them all at once.

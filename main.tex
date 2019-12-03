@@ -3,16 +3,37 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 
+\usepackage{xparse}
+\usepackage[hidelinks]{hyperref}
 \usepackage{biblatex}
 \usepackage{csquotes}
 \usepackage[english]{babel}
 \usepackage{amsmath}
-
+\usepackage{isomath}
+\usepackage{mathtools}
+\usepackage{physics}
+\usepackage{bm}
 \usepackage{cleveref}
 
 \addbibresource{bibliography.tex}
 
-\title{CSE Project}
+% Personal commands
+\renewcommand{\vec}{\vectorsym}
+\newcommand{\mat}{\matrixsym}
+\newcommand{\tensor}{\tensorsym}
+\newcommand{\hermiteH}[1]{\ensuremath{H_{#1}}}
+\NewDocumentCommand\laguerreL{om}{%
+	\IfNoValueTF{#1}%
+	{\ensuremath{L_{#2}}}%
+	{\ensuremath{L_{#2}^{#1}}}%
+}
+\NewDocumentCommand\legendreP{om}{%
+\IfNoValueTF{#1}%
+{\ensuremath{P_{#2}}}%
+{\ensuremath{P_{#2}^{#1}}}%
+}
+
+\title{Computation of expansion coefficients of plasma distribution in Hermite-Laguerre polynomials}
 \author{Louis Stenger}
 \date{\today}
 

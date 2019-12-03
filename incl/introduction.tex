@@ -96,5 +96,30 @@ After a lengthy calculation, it can be shown that, linearizing for small perturb
 	+
 	\sum_{l,k=0}^{\infty} \frac{f_{Ma}}{\sigma_j^p} \tensor{M}_b^{lk}\tensor{Y}^p(\vu*{v}) \nu_{ab}^{Flk},
 \end{equation}
-
 where there are enough new constants and indices such that I don't manage to explain them all at once.
+These moments can themselves be expressed, within the framework of gyrokinetic theory, as a function of the gyrokinetic moments $N_a^{lk}$.
+
+In order to reach such conclusions, we note that if the Coulomb operator (and the distribution function) were expanded in terms of spherical harmonics, it is principally due to the spherical symmetry of the Coulomb interaction (the Rosenbluth potentials also displayed a $1/r$ dependence). It could also be suggested that a more adapted expansion of the distribution function is to be found when working in gyrokinetic coordinates $\vec{Z}$:
+\begin{equation}
+	\langle f_a \rangle_\vec{R} = \sum_{p,j=0}^{\infty} \frac{N_a^{pj}}{\sqrt{2^pp!}}f_{Ma}\hermiteH{p}(s_{\parallel a})\laguerreL{j}(s_{\perp a}^2),
+\end{equation}
+with $\langle\,\cdot\,\rangle_\vec{R}$ the gyro-averaging operator, $s_{\parallel a}=v_{\parallel a}/v_{th\parallel a}$ and $s_{\perp a}=v_{\perp a}/v_{th\perp a}$ the normalized parallel and perpendicular velocities, and $\hermiteH{p}(x)$ the physicist's Hermite polynomial of order $p$, given by the Rodrigues' formula,
+\begin{align}
+	\hermiteH{p}(x) = (-1)^p e^{x^2} \dv[p]{x} e^{-x^2},
+	\\
+	\int_{-\infty}^{\infty} \hermiteH{p}(x)\hermiteH{p'}(x)e^{-x^2} \dd{x}
+	= 2^pp!\sqrt{\pi}\delta_{pp'},
+\end{align}
+and $\laguerreL{j}(x)$ the Laguerre polynomials of order $j$, defined by
+\begin{align}
+	\laguerreL{j}(x) = \frac{e^x}{j!} \dv[j]{x}(e^{-x}x^j),
+	\\
+	\int_{0}^{\infty} \laguerreL{j}(x)\laguerreL{j'}(x)e^{-x} \dd{x} = \delta_{jj'}
+\end{align}
+The Hermite-Laguerre polynomial basis being orthogonal, the guiding-center moments are written
+\begin{equation}
+	N_a^{pj} = \frac{1}{N_a} \int \frac{
+	\hermiteH{p}(s_{\parallel a})\laguerreL{j}(s_{\perp a}^2) \langle f_{a} \rangle_{\vec{R}}
+	}{\sqrt{2^pp!}} \frac{B}{m_a} \dd{\mu} \dd{v_\parallel} \dd{\theta}.
+\end{equation}
+And don't ask me what $N_a$ is, I have no idea.

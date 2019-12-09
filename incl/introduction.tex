@@ -31,65 +31,63 @@ yielding an operator which can easily be implemented in numerical simulation cod
 The gyrokinetic description of plasmas is based on first principles, which introduces simplifying assumption to the evolution of the Boltzmann distribution $f_a(\vec{x},\vec{v},t)$ of a species $a$, given by the Vlasov equation,
 \begin{equation}
 	\pdv{f_a}{t} + \dot{\vec{x}}\cdot\pdv{f_a}{\vec{x}} + \dot{\vec{v}}\cdot\pdv{f_a}{\vec{v}} = \sum_b C(f_a,f_b),
+	\label{eq:vlasov}
 \end{equation}
 where $C(f_a,f_b)$ is the Coulomb collision operator between species $a$ and $b$. When small angle collisions dominate, this operator can be expanded as
 \begin{equation}
 	C(f_a,f_b) = L_{ab} \sum_{j,k} \pdv{v_k} \biggl[ \pdv{v_j}\biggl(\pdv{G_b}{v_k}{v_j} f_a\biggr) - 2\biggl(1+\frac{m_a}{m_b}\biggr)\pdv{H_b}{v_k} f_a \biggr],
+	\label{eq:coulomb_operator}
 \end{equation}
 where  the Rosenbluth potential $G_b$ and $H_b$, satisfying $\grad{v}^2G_b=2H_b$ and $\grad{v}^2H_b=-4\pi f_b$ defined as
 \begin{align}
-	G_b &= \int f_b(\vec{v}') \abs{\vec{v}-\vec{v}'}\dd{\vec{v}'} \\
-	H_b &= \int \frac{f_b(\vec{v}')}{\abs{\vec{v}-\vec{v}'}} \dd{\vec{v}'} \label{eq:rosenbluth_H}
+	G_b = \int f_b(\vec{v}') \abs{\vec{v}-\vec{v}'}\dd{\vec{v}'}
+	\label{eq:rosenbluth_G}
+	\\
+	H_b = \int \frac{f_b(\vec{v}')}{\abs{\vec{v}-\vec{v}'}} \dd{\vec{v}'}
+	\label{eq:rosenbluth_H}
 \end{align}
 We introduced $L_{ab}=q_a^2q_b^2\lambda_{ab}/(8\pi^2\epsilon_0^2m_a^2)=\nu_{ab}v_{tha}^3/n_b$, where $\lambda_{ab}$ and $\nu_{ab}$ the Coulomb logarithm, resp. collision frequency, between species $a$ and $b$. We also write $v_{tha}=\sqrt{2T_a/m_a}$, $q_a$, $m_a$ and $n_a$ the thermal speed, charge, mass and density of particles of species $a=e,i$.
 
-In order to recast $f_a$ into an appropriate basis, such that the Coulomb operator can be cast as a function of moments of $f_a$, it is noted that the Rosenbluth potential exhibit spherical symmetry, allowing one to perform the following multipole expansion of the factor in \cref{eq:rosenbluth_H},
+In order to recast $f_a$ into an appropriate basis, such that the Coulomb operator can be cast as a function of moments of $f_a$,
+% Shouln't the Hermite-Laguerre expansion of fa be mentioned before talking about its moments.
+it is noted that the Rosenbluth potential exhibit spherical symmetry, allowing one to perform the following multipole expansion of the factor in \cref{eq:rosenbluth_H},
 \begin{align}
 \frac{1}{\abs{\vec{v}-\vec{v}'}} =
 	\begin{dcases}
 	\sum_{l=0}^{\infty}\frac{(-\vec{v}')^l}{l!} \cdot \pdv[l]{\vec{v}}\biggl(\frac{1}{v}\biggr), & v'\leq v, \\
 	\sum_{l=0}^{\infty} \frac{(-\vec{v}')^l}{l!} \cdot \pdv[l]{(\vec{v}')} \biggl(\frac{1}{v'}\biggr), & v<v'.
 	\end{dcases}
+	\label{eq:multipole}
 \end{align}
-Considering the spherical harmonic tensor $\tensor{Y}^l(\vec{v})$,
+These equations display spherical symmetry, such that one can naturally expand them in terms of spherical harmonics, which's tensor $\tensor{Y}^l(\vec{v})$ reads
 \begin{equation}
-	\tensor{Y}^l(\vec{v}) = \frac{(-1)^lv^{2l+1}}{(2l-1)!!}\biggl(\pdv{\vec{v}}\biggr)^l\frac{1}{v},
+	\tensor{Y}^l(\vec{v}) = \frac{(-1)^lv^{2l+1}}{(2l-1)!!}\biggl(\pdv{\vec{v}}\biggr)^l\frac{1}{v}.
+	\label{eq:spherical_harmonics_Yl}
 \end{equation}
-the Rosenbluth potential $H_b$ is rewritten as
-\begin{align}
-	H_b &= 2 \sum_{l=0}^{\infty}\frac{(2l-1)!!}{l!} \biggl(
-	\int_{v>v'} f_b(\vec{v}') \frac{(\vec{v}')^l}{v^{2l+1}} \tensor{Y}^l(\vec{v}) \dd{\vec{v}'}
-	+
-	\int_{v'\geq v} f_b(\vec{v}') \frac{(\vec{v})^l}{(v')^{2l+1}}\tensor{Y}^l(\vec{v}') \dd{\vec{v}'}
-	\biggr)
-	\\
-	&= 2 \sum_{l=0}^{\infty}\frac{(2l-1)!!}{l!} \tensor{Y}^l(\vec{v}) \biggl(
-	\frac{1}{(v^2)^{l+1/2}} \int_{v'<v} f_b(\vec{v}') \tensor{Y}^l(\vec{v}')\dd{\vec{v}'}
-	+
-	\int_{v'\geq v} f_b(\vec{v}')\frac{\tensor{Y}^l(\vec{v}')}{[(v')^2]^{l+1/2}} \dd{\vec{v}'}
-	\biggr),
-\end{align}
-where we used that $\tensor{Y}^l(\vec{v})$ is symmetric and totally traceless to obtain the second equality.
-
 The integration can be continued by expanding $f_b$ into a similar basis,
 \begin{equation}
 	\tensor{Y}^{lk}(\vec{v}) = \tensor{Y}^l(\vec{v}) \laguerreL[l+1/2]{k}(v^2),
+	\label{eq:spherical_harmonics_Ylk}
 \end{equation}
 with $\laguerreL[l+1/2]{k}(v)$ the associated Laguerre polynomial:
 \begin{align}
-	\laguerreL[l+1/2]{k}(v) = \sum_{m=0}^{k}L_{km}^l v^l,\\
+	\laguerreL[l+1/2]{k}(v) = \sum_{m=0}^{k}L_{km}^l v^l,
+	\label{eq:laguerre_gen_poly}
+	\\
 	L_{km}^l=\frac{(-1)^m(l+k+1/2)!}{(k-m)!(l+m+1/2)!m!}.
 \end{align}
 This basis can be shown to be complete, such that $f_b$ is rewritten in terms of its velocity moments,
 \begin{align}
 	f_b(\vec{v}) &= f_{Mb} \sum_{l,k=0}^{\infty} \tensor{Y}^{lk}\biggl(\frac{\vec{v}}{v_{thb}}\biggr) \frac{\tensor{M}_b^{lk}}{\sigma_k^l},
+	\label{eq:fb_expansion}
 	\\
 	\tensor{M}_b^{lk} &= \frac{1}{n_b} \int f_b(\vec{v}) \tensor{Y}^{lk}\biggl(\frac{\vec{v}}{v_{thb}}\biggr)\dd{\vec{v}},
 	\\
 	\sigma_k^l &= \frac{l!(l+k+1/2)!}{2^l(l+1/2)!k!},
 \end{align}
-where $f_{Mb}$ a Maxwellian distribution function, and $\sigma_k^l$ a normalization constant. These expressions can then be replaced in the equations for $H_b$ and $G_b$.
-
+where $f_{Mb}$ a Maxwellian distribution function, and $\sigma_k^l$ a normalization constant. Using that the elements of the bases, \cref{eq:spherical_harmonics_Yl,eq:spherical_harmonics_Ylk}, are orthogonal,
+% FIXME - Orthonormal?
+replacing the multipole terms \eqref{eq:multipole} and $f_b$ \eqref{eq:fb_expansion} in the Rosenbluth potentials, \cref{eq:rosenbluth_G,eq:rosenbluth_H}, most of the integrals vanish.
 After a lengthy calculation, it can be shown that, linearizing for small perturbations yields
 \begin{equation}
 	C_{ab} = \sum_{p,j=0}^{\infty} \frac{f_{Ma}}{\sigma_j^p} \tensor{M}_a^{pj}\tensor{Y}^p(\vu*{v}) \nu_{ab}^{Tpj}
@@ -99,7 +97,7 @@ After a lengthy calculation, it can be shown that, linearizing for small perturb
 where there are enough new constants and indices such that I don't manage to explain them all at once.
 These moments can themselves be expressed, within the framework of gyrokinetic theory, as a function of the gyrokinetic moments $N_a^{lk}$.
 
-In order to reach such conclusions, we note that if the Coulomb operator (and the distribution function) were expanded in terms of spherical harmonics, it is principally due to the spherical symmetry of the Coulomb interaction (the Rosenbluth potentials also displayed a $1/r$ dependence). It could also be suggested that a more adapted expansion of the distribution function is to be found when working in gyrokinetic coordinates $\vec{Z}$:
+In order to reach such conclusions, we note that if the Coulomb operator (and the distribution function) were expanded in terms of spherical harmonics, it is principally due to the spherical symmetry of the Coulomb interaction (the Rosenbluth potentials also displayed a $1/r$ dependence). It could also be suggested that a more adapted expansion of $f$ in gyrokinetic theory is obtained with th Hermite-Laguerre polynomials, which are orthogonal to the Maxwellian distribution:
 \begin{equation}
 	\langle f_a \rangle_\vec{R} = \sum_{p,j=0}^{\infty} \frac{N_a^{pj}}{\sqrt{2^pp!}}f_{Ma}\hermiteH{p}(s_{\parallel a})\laguerreL{j}(s_{\perp a}^2),
 \end{equation}
@@ -122,4 +120,33 @@ The Hermite-Laguerre polynomial basis being orthogonal, the guiding-center momen
 	\hermiteH{p}(s_{\parallel a})\laguerreL{j}(s_{\perp a}^2) \langle f_{a} \rangle_{\vec{R}}
 	}{\sqrt{2^pp!}} \frac{B}{m_a} \dd{\mu} \dd{v_\parallel} \dd{\theta}.
 \end{equation}
-And don't ask me what $N_a$ is, I have no idea.
+And don't ask me what $N_a$ is, I have no idea. Now, in order to project the Coulomb operator in the Hermite-Laguerre basis, an expression of the moments $\tensor{M}_a^{pj}$ in terms of the $N_a^{pj}$ can be sought. While the results of this derivation can be found in
+% cite
+, we focus on the final expression for the Hermite-Laguerre moments $C_{ab}^{pj}$ of the full Coulomb operator,
+\begin{equation}
+	C_{ab}^{pj} = \sum_{l,k,n,q=0}^{+\infty}\sum_{m=0}^{k}\sum_{r=0}^{q} \frac{L_{km}^l L_{qr}^n}{\sqrt{2^pp!}} C_{ab,lkm}^{pj,nqr},
+\end{equation}
+where
+\begin{equation}
+	C_{ab,lkm}^{pj,nqr} (\vec{k},\vec{k}') = \sum_{u=0}^{\min(2,l,n)} \sum_{i=0}^{\min(l,n)-u} \sum_{d=-l-n+2i}^{l+n-2i-2u} \sum_{z,p,p'=0}^{+\infty} D_{abuidzpp'}^{lkmnqr}(\vec{k},\vec{k}')I,
+\end{equation}
+namely with
+\begin{equation}
+	I = \sum_{h=0}^{p+z+j} \sum_{g=0}^{g+p'} \sum_{s=0}^{p+2g} \sum_{t=0}^{g+\floor{p/2}} d_{pjh}^{std} \bar{d}_{p'hg}^{z+d} (T^{-1})_{pg}^{std} C_{*abu}^{st,lm,nr} \frac{(s+d)!}{(s-d)!} \frac{\delta_{l+n-2i-2u,s}}{4\pi(s+1/2)}.
+\end{equation}
+This expression includes both the expansions of $f_a$ and $f_b$ in Hermite-Laguerre moments in the terms $C_{*abu}^{st,lm,nr}$ and $D_{abuidzpp'}^{lkmnqr}$. The remaining $(T^{-1})_{pg}^{std}$ coefficient is associated with the change of basis between Hermite-Laguerre polynomials and the spherical harmonics. Their analytical expression is derived in terms of associated Legendre $P_l^m(x)$ and associated Laguerre polynomials \eqref{eq:laguerre_gen_poly},
+\begin{align}
+	\tensor{Y}^{l}(\vec{v}) = v^l \sqrt{ \frac{2\pi^{3/2}l!}{2^l(l+1/2)!} } \sum_{m=-l}^{l} Y_{lm}(\varphi,\theta)\vec{e}^{lm},
+	\\
+	Y_{lm}(\varphi,\theta) = (-1)^m \sqrt{ \frac{(2l+1)}{4\pi} \frac{(l-m)!}{(l+m)!} } P_l^m(\cos\varphi)e^{im\theta}.
+\end{align}
+A projection of the bases on each other gives,
+\begin{equation}
+	s^l P_l^m\biggl(\frac{s_\parallel}{s}\biggr) L_k^{l+1/2}(s^2) = \sum_{p=0}^{l+2k} \sum_{j=0}^{k+\floor{l/2}} T_{lkm}^{pj} H_p(s_\parallel) L_j(s_\perp^2) s_\perp^m
+\end{equation}
+and
+\begin{equation}
+	H_p(s_\parallel) L_j(s_\perp^2) s_\perp^m
+	=
+	\sum_{l=0}^{p+2j} \sum_{k=0}^{j+\floor{p/2}} (T^{-1})^{lkm}_{pj} s^l P_l^m\biggl(\frac{s_\parallel}{s}\biggr) L_k^{l+1/2}(s^2)
+\end{equation}
